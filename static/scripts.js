@@ -64,3 +64,8 @@ document.getElementById('startGameBtn').addEventListener('click', function() {
 socket.on('game_started', function() {
     window.location.href = '/game?code=' + roomCode;
 });
+
+// Asegurar que el código de sala esté en mayúsculas
+document.getElementById('gameCode').addEventListener('input', function() {
+    this.value = this.value.toUpperCase();
+});

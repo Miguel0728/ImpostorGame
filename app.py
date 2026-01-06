@@ -1,3 +1,4 @@
+import json
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_socketio import SocketIO, join_room, emit
 import random
@@ -7,7 +8,20 @@ app = Flask(__name__)
 app.secret_key = 'tu_clave_secreta_aqui'  # Cambia por una clave segura
 socketio = SocketIO(app, cors_allowed_origins="*")  # Habilitar WebSockets
 
-rooms = {}  # Almacena las salas de juego en memoria (puedes usar base de datos)
+ROOMS_FILE = 'rooms.json'
+
+def load_rooms():
+    try:
+        with open(ROOMS_FILE, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
+
+def save_rooms():
+    with open(ROOMS_FILE, 'w') as f:
+        json.dump(rooms, f)
+
+rooms = load_rooms()  # Cargar salas al iniciar
 
 @app.route('/')
 def index():
@@ -17,8 +31,7 @@ def index():
 @app.route('/lobby')
 def lobby():
     """Sala de espera: muestra lista de jugadores y configuración (solo para host)."""
-    # Aquí puedes pasar datos dinámicos, como room_code desde query params o sesión
-    room_code = request.args.get('code')  # Ej: /lobby?code=ABC123
+    room_code = request.args.get('code')
     if room_code and room_code in rooms:
         players = rooms[room_code]['players']
         max_players = rooms[room_code]['max_players']
@@ -29,7 +42,6 @@ def lobby():
 @app.route('/game')
 def game():
     """Página del juego: muestra roles, votación y acciones."""
-    # Similar, pasa datos como room_code
     room_code = request.args.get('code')
     return render_template('game.html', room_code=room_code)
 
@@ -39,21 +51,22 @@ def create_game():
     max_players = int(request.form.get('maxPlayers'))
     room_code = generate_room_code()
     rooms[room_code] = {'host': host_name, 'max_players': max_players, 'players': [host_name]}
+    save_rooms()  # Guardar salas
     session['player_name'] = host_name
-    print(f"Sala creada: {room_code} por {host_name}")  # Log para depurar
+    print(f"Sala creada: {room_code} por {host_name}")
     return redirect(url_for('lobby', code=room_code))
 
 @app.route('/join_game', methods=['POST'])
 def join_game():
     player_name = request.form.get('playerName')
-    # Añadimos .strip() para eliminar espacios accidentales
-    game_code = request.form.get('gameCode').strip().upper() 
+    game_code = request.form.get('gameCode').strip().upper()
     
-    print(f"Intento de unión: Jugador={player_name}, Código={game_code}") # Log de depuración
-    print(f"Salas activas: {list(rooms.keys())}") # Ver qué salas existen realmente en memoria
-
+    print(f"Intento de unión: Jugador={player_name}, Código={game_code}")
+    print(f"Salas activas: {list(rooms.keys())}")
+    
     if validate_code(game_code):
         rooms[game_code]['players'].append(player_name)
+        save_rooms()  # Guardar salas
         session['player_name'] = player_name
         return redirect(url_for('lobby', code=game_code))
     else:
@@ -61,7 +74,6 @@ def join_game():
         return redirect(url_for('index'))
 
 def validate_code(code):
-    # Asegúrate de que comparas strings correctamente
     return code in rooms and len(rooms[code]['players']) < rooms[code]['max_players']
 
 # Eventos de Socket.IO
@@ -75,18 +87,13 @@ def handle_join_room(data):
 @socketio.on('start_game')
 def handle_start_game(data):
     room_code = data['room_code']
-    # Lógica para iniciar el juego (asignar roles, etc.)
     emit('game_started', room=room_code)
 
-# Funciones auxiliares (implementa según necesidad)
 def generate_room_code():
     while True:
         code = ''.join(random.choices(string.ascii_uppercase, k=6))
         if code not in rooms:
             return code
-
-def validate_code(code):
-  return code in rooms and len(rooms[code]['players']) < rooms[code]['max_players']
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
