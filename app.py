@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_socketio import SocketIO, join_room, emit
 import random
 import string
@@ -6,7 +6,6 @@ import string
 app = Flask(__name__)
 app.secret_key = 'tu_clave_secreta_aqui'  # Cambia por una clave segura
 socketio = SocketIO(app, cors_allowed_origins="*")  # Habilitar WebSockets
-
 
 rooms = {}  # Almacena las salas de juego en memoria (puedes usar base de datos)
 
@@ -22,7 +21,9 @@ def lobby():
     room_code = request.args.get('code')  # Ej: /lobby?code=ABC123
     if room_code and room_code in rooms:
         players = rooms[room_code]['players']
-        return render_template('lobby.html', room_code=room_code, players=players)
+        max_players = rooms[room_code]['max_players']
+        is_host = session.get('player_name') == rooms[room_code]['host']
+        return render_template('lobby.html', room_code=room_code, players=players, max_players=max_players, is_host=is_host)
     return redirect(url_for('index'))
 
 @app.route('/game')
@@ -42,7 +43,6 @@ def create_game():
     print(f"Sala creada: {room_code} por {host_name}")  # Log para depurar
     return redirect(url_for('lobby', code=room_code))
 
-
 @app.route('/join_game', methods=['POST'])
 def join_game():
     player_name = request.form.get('playerName')
@@ -57,7 +57,7 @@ def join_game():
         session['player_name'] = player_name
         return redirect(url_for('lobby', code=game_code))
     else:
-        print(f"Error: La sala {game_code} no existe o está llena")
+        flash('Código de sala inválido o sala llena.')
         return redirect(url_for('index'))
 
 def validate_code(code):

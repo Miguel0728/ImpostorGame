@@ -6,7 +6,7 @@
     <title>Sala de Espera - El Impostor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-<body data-room-code="{{ room_code }}" data-player-name="{{ session.get('player_name', 'Jugador') }}" data-players="{{ players|tojson }}">
+<body data-room-code="{{ room_code }}" data-player-name="{{ session.get('player_name', 'Jugador') }}" data-players="{{ players|tojson }}" data-max-players="{{ max_players }}" data-is-host="{{ is_host|tojson }}">
     <div class="container">
         <header class="game-header">
             <h1 class="game-title">🕵️ SALA DE ESPERA</h1>
@@ -26,7 +26,7 @@
             <div class="card players-card">
                 <div class="card-header">
                     <h2 class="card-title">Jugadores</h2>
-                    <span id="playerCount" class="player-count">0/6</span>
+                    <span id="playerCount" class="player-count">0/{{ max_players }}</span>
                 </div>
                 
                 <div id="playersList" class="players-list">

@@ -13,6 +13,10 @@
             <p class="game-subtitle">Juego de deducción social</p>
         </header>
 
+        {% for message in get_flashed_messages() %}
+        <div class="error">{{ message }}</div>
+        {% endfor %}
+
         <main class="main-content">
             <div class="card">
                 <h2 class="card-title">Crear Nueva Partida</h2>

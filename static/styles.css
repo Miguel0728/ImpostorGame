@@ -460,6 +460,15 @@ body {
     transform: translateX(-50%) translateY(0);
 }
 
+.error {
+    background: var(--danger);
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
     .game-title {
