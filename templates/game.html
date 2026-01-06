@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego en Curso - El Impostor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container game-container">
+        <header class="game-header">
+            <h1 class="game-title-small">🕵️ EL IMPOSTOR</h1>
+            <div class="game-info-bar">
+                <div class="info-item">
+                    <span class="info-label">Sala:</span>
+                    <span id="gameRoomCode" class="info-value">------</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Tiempo:</span>
+                    <span id="gameTimer" class="info-value timer">5:00</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content game-main">
+            <!-- Role Card -->
+            <div class="card role-card">
+                <div id="roleDisplay" class="role-display">
+                    <div class="role-icon">❓</div>
+                    <h2 id="roleTitle" class="role-title">Tu Rol</h2>
+                    <div id="roleContent" class="role-content">
+                        <p class="loading-text">Asignando roles...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Instructions -->
+            <div class="card instructions-card">
+                <h3 class="instructions-title">📋 Instrucciones</h3>
+                <div id="instructionsContent" class="instructions-content">
+                    <p>Espera a que se asignen los roles...</p>
+                </div>
+            </div>
+
+            <!-- Players in Game -->
+            <div class="card players-game-card">
+                <div class="card-header">
+                    <h3 class="card-title-small">Jugadores en Partida</h3>
+                    <span id="playersInGame" class="player-count-small">0</span>
+                </div>
+                <div id="gamePlayersList" class="players-grid">
+                    <!-- Los jugadores se agregarán dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Voting Section -->
+            <div class="card voting-card" id="votingSection" style="display: none;">
+                <h3 class="voting-title">🗳️ Votación</h3>
+                <p class="voting-description">Vota por quien crees que es el impostor</p>
+                <div id="votingOptions" class="voting-options">
+                    <!-- Las opciones de votación se agregarán dinámicamente -->
+                </div>
+                <div id="votingResults" class="voting-results" style="display: none;">
+                    <!-- Los resultados se mostrarán aquí -->
+                </div>
+            </div>
+
+            <!-- Game Actions -->
+            <div class="actions-container">
+                <button id="revealVotingBtn" class="btn btn-warning btn-large" style="display: none;">
+                    🗳️ Iniciar Votación
+                </button>
+                <button id="endGameBtn" class="btn btn-danger">
+                    ❌ Terminar Partida
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="gameOverModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="gameOverTitle" class="modal-title">🎮 Fin del Juego</h2>
+            </div>
+            <div class="modal-body">
+                <div id="gameOverContent" class="game-over-content">
+                    <!-- El contenido del resultado se agregará dinámicamente -->
+                </div>
+                <div id="impostorReveal" class="impostor-reveal">
+                    <!-- Se mostrará quién era el impostor -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="backToLobbyBtn" class="btn btn-primary btn-large">
+                    🏠 Volver al Inicio
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast">
+        <span id="toastMessage"></span>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>

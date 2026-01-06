@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Impostor - Juego de Deducción</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="game-header">
+            <h1 class="game-title">🕵️ EL IMPOSTOR</h1>
+            <p class="game-subtitle">Juego de deducción social</p>
+        </header>
+
+        <main class="main-content">
+            <div class="card">
+                <h2 class="card-title">Crear Nueva Partida</h2>
+                <form id="createGameForm" class="game-form" action="/create_game" method="POST">
+                    <div class="form-group">
+                        <label for="hostName">Tu Nombre</label>
+                        <input type="text" id="hostName" name="hostName" placeholder="Ingresa tu nombre" required maxlength="20">
+                    </div>
+                    <div class="form-group">
+                        <label for="maxPlayers">Número de Jugadores</label>
+                        <select id="maxPlayers" name="maxPlayers" required>
+                            <option value="3">3 jugadores</option>
+                            <option value="4">4 jugadores</option>
+                            <option value="5">5 jugadores</option>
+                            <option value="6" selected>6 jugadores</option>
+                            <option value="7">7 jugadores</option>
+                            <option value="8">8 jugadores</option>
+                            <option value="9">9 jugadores</option>
+                            <option value="10">10 jugadores</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" >Crear Partida</button>
+                </form>
+            </div>
+
+            <div class="divider">
+                <span>O</span>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">Unirse a Partida</h2>
+                <form id="joinGameForm" class="game-form" action="/join_game" method="POST">
+                    <div class="form-group">
+                        <label for="playerName">Tu Nombre</label>
+                        <input type="text" id="playerName" name="playerName" placeholder="Ingresa tu nombre" required maxlength="20">
+                    </div>
+                    <div class="form-group">
+                        <label for="gameCode">Código de Partida</label>
+                        <input type="text" id="gameCode" name="gameCode" placeholder="Ej: ABC123" required maxlength="6" style="text-transform: uppercase;">
+                    </div>
+                    <button type="submit" class="btn btn-secondary" >Unirse</button>
+                </form>
+            </div>
+        </main>
+
+        <footer class="game-footer">
+            <p>Comparte el código de partida con tus amigos por WhatsApp</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>

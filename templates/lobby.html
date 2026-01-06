@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sala de Espera - El Impostor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="game-header">
+            <h1 class="game-title">🕵️ SALA DE ESPERA</h1>
+            <div class="room-code-display">
+                <p class="room-code-label">Código de Sala</p>
+                <div class="room-code-box">
+                    <span id="roomCode" class="room-code">{{ room_code or "------" }}</span>
+                    <button id="copyCodeBtn" class="copy-btn" title="Copiar código">
+                        📋
+                    </button>
+                </div>
+                <p class="room-code-hint">Comparte este código con tus amigos</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="card players-card">
+                <div class="card-header">
+                    <h2 class="card-title">Jugadores</h2>
+                    <span id="playerCount" class="player-count">0/6</span>
+                </div>
+                
+                <div id="playersList" class="players-list">
+                    <!-- Los jugadores se agregarán dinámicamente -->
+                </div>
+
+                <div class="waiting-message">
+                    <div class="spinner"></div>
+                    <p>Esperando más jugadores...</p>
+                </div>
+            </div>
+
+            <div class="card config-card" id="hostControls" style="display: none;">
+                <h2 class="card-title">Configuración</h2>
+                <div class="config-section">
+                    <div class="form-group">
+                        <label for="categorySelect">Categoría de Palabras</label>
+                        <select id="categorySelect" class="config-select">
+                            <option value="general">General</option>
+                            <option value="animales">Animales</option>
+                            <option value="comida">Comida</option>
+                            <option value="paises">Países</option>
+                            <option value="profesiones">Profesiones</option>
+                            <option value="deportes">Deportes</option>
+                            <option value="peliculas">Películas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="roundTime">Tiempo de Ronda (minutos)</label>
+                        <select id="roundTime" class="config-select">
+                            <option value="3">3 minutos</option>
+                            <option value="5" selected>5 minutos</option>
+                            <option value="7">7 minutos</option>
+                            <option value="10">10 minutos</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions-container">
+                <button id="startGameBtn" class="btn btn-success btn-large" style="display: none;">
+                    🎮 Iniciar Juego
+                </button>
+                <button id="leaveGameBtn" class="btn btn-danger">
+                    ❌ Salir de la Sala
+                </button>
+            </div>
+        </main>
+
+        <footer class="game-footer">
+            <p id="hostIndicator"></p>
+        </footer>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast">
+        <span id="toastMessage"></span>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>
