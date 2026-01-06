@@ -6,7 +6,7 @@
     <title>Sala de Espera - El Impostor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-<body>
+<body data-room-code="{{ room_code }}" data-player-name="{{ session.get('player_name', 'Jugador') }}" data-players="{{ players|tojson }}">
     <div class="container">
         <header class="game-header">
             <h1 class="game-title">🕵️ SALA DE ESPERA</h1>
@@ -88,27 +88,5 @@
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='scripts.js') }}"></script>
-    <script>
-        const socket = io();
-        const roomCode = '{{ room_code }}';
-        const playerName = '{{ session.get("player_name", "Jugador") }}';  // Asumir que se guarda en sesión
-
-        socket.emit('join_room', { room_code: roomCode, player_name: playerName });
-
-        socket.on('update_players', function(data) {
-            const playersList = document.getElementById('playersList');
-            playersList.innerHTML = '';
-            data.players.forEach(player => {
-                const playerDiv = document.createElement('div');
-                playerDiv.className = 'player-item';
-                playerDiv.textContent = player;
-                playersList.appendChild(playerDiv);
-            });
-        });
-
-        // Inicializar con players pasados desde template
-        const initialPlayers = {{ players|tojson }};
-        socket.emit('update_players', { players: initialPlayers });
-    </script>
 </body>
 </html>

@@ -45,17 +45,24 @@ def create_game():
 
 @app.route('/join_game', methods=['POST'])
 def join_game():
-    """Maneja unión a partida desde index.html (formulario joinGameForm)."""
     player_name = request.form.get('playerName')
-    game_code = request.form.get('gameCode').upper()
-    # Lógica: validar código, agregar jugador, redirigir a lobby
+    # Añadimos .strip() para eliminar espacios accidentales
+    game_code = request.form.get('gameCode').strip().upper() 
+    
+    print(f"Intento de unión: Jugador={player_name}, Código={game_code}") # Log de depuración
+    print(f"Salas activas: {list(rooms.keys())}") # Ver qué salas existen realmente en memoria
+
     if validate_code(game_code):
         rooms[game_code]['players'].append(player_name)
         session['player_name'] = player_name
-        print(f"Jugador {player_name} unido a {game_code}")  # Log
         return redirect(url_for('lobby', code=game_code))
     else:
-        return redirect(url_for('index'))  # O mostrar error
+        print(f"Error: La sala {game_code} no existe o está llena")
+        return redirect(url_for('index'))
+
+def validate_code(code):
+    # Asegúrate de que comparas strings correctamente
+    return code in rooms and len(rooms[code]['players']) < rooms[code]['max_players']
 
 # Eventos de Socket.IO
 @socketio.on('join_room')
