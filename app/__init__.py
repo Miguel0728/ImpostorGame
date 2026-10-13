@@ -15,5 +15,7 @@ def register_blueprints(app):
     """Registra los blueprints de rutas de la aplicación."""
     from app.routes.home import home_bp
     from app.routes.game import game_bp
+    from app.routes.room import room_bp
     app.register_blueprint(home_bp)
     app.register_blueprint(game_bp)
+    app.register_blueprint(room_bp)

@@ -66,6 +66,9 @@
 .action-container {
     width: 100%;
     padding: 0 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 @media (min-width: 401px) {

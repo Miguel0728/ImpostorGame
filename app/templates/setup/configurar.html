@@ -8,6 +8,7 @@
 
 {% block content %}
 <section class="config-card" aria-labelledby="config-title">
+    {% if not online %}
     <nav class="wizard-steps" aria-label="Progreso de configuración">
         <div class="step-item step-active">
             <span class="step-bubble">1</span>
@@ -24,6 +25,7 @@
             <span class="step-text">Roles</span>
         </div>
     </nav>
+    {% endif %}
 
     <header class="config-header">
         <a href="{{ url_for('home.index') }}" class="btn-back" aria-label="Volver al inicio">
@@ -33,7 +35,7 @@
         <p class="config-subtitle">Ajusta las reglas de la misión antes del despegue</p>
     </header>
 
-    <form id="config-form" class="config-form" method="POST" action="{{ url_for('game.configurar') }}">
+    <form id="config-form" class="config-form" method="POST" action="{{ url_for('room.nueva' if online else 'game.configurar') }}">
         <!-- Configuración de Jugadores -->
         <div class="form-group">
             <div class="group-info">
@@ -151,7 +153,7 @@
 
         <div class="action-container">
             <button type="submit" class="btn-primary">
-                <span class="btn-text">CONTINUAR A JUGADORES</span>
+                <span class="btn-text">{% if online %}CREAR SALA{% else %}CONTINUAR A JUGADORES{% endif %}</span>
                 <span class="btn-icon" aria-hidden="true">➔</span>
             </button>
         </div>

@@ -1,0 +1,146 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Sala {{ code }} | El Impostor{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jugadores.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/roles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/juego.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/votacion.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/resultado.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sala.css') }}">
+{% endblock %}
+
+{% block content %}
+<section id="room-root" class="roles-viewport"
+         data-state-url="{{ url_for('room.estado', code=code) }}"
+         data-action-url="{{ url_for('room.accion', code=code) }}"
+         data-home-url="{{ url_for('home.index') }}">
+    <p id="room-error" class="form-error view-hidden" role="alert"></p>
+
+    <!-- VISTA: Entrar a la sala con un nombre -->
+    <article id="view-join" class="game-card view-hidden">
+        <p class="card-tagline">SALA {{ code }}</p>
+        <h1 class="finished-title">¿CÓMO TE LLAMAS?</h1>
+        <form id="join-form" class="players-form">
+            <div class="player-slot color-theme-1">
+                <div class="player-field">
+                    <label for="join-name" class="player-label">Tu nombre o apodo</label>
+                    <input type="text" id="join-name" class="player-input" placeholder="Nombre o apodo" maxlength="16" autocomplete="off" required>
+                </div>
+            </div>
+            <button type="submit" class="btn-primary">
+                <span class="btn-text">ENTRAR A LA SALA</span>
+                <span class="btn-icon" aria-hidden="true">➔</span>
+            </button>
+        </form>
+        <p id="join-closed" class="finished-description view-hidden">La partida ya comenzó. Pide al anfitrión que cree una sala nueva.</p>
+    </article>
+
+    <!-- VISTA: Lobby de espera -->
+    <article id="view-lobby" class="game-card view-hidden">
+        <p class="card-tagline">SALA ONLINE</p>
+        <h1 class="room-code">{{ code }}</h1>
+        <p id="lobby-count" class="instruction-label"></p>
+        <div id="lobby-players" class="players-list" role="list"></div>
+        <button id="btn-share" type="button" class="btn-secondary">
+            <span class="btn-icon" aria-hidden="true">🔗</span>
+            <span id="btn-share-text" class="btn-text">COMPARTIR ENLACE</span>
+        </button>
+        <button id="btn-start" type="button" class="btn-primary" data-for="host" data-action="iniciar">
+            <span class="btn-text">COMENZAR PARTIDA</span>
+            <span class="btn-icon" aria-hidden="true">➔</span>
+        </button>
+        <p class="finished-description" data-for="guest">Esperando a que el anfitrión inicie la partida...</p>
+    </article>
+
+    <!-- VISTA: Debate con rol privado -->
+    <article id="view-debate" class="debate-card view-hidden">
+        <span id="debate-round" class="round-label"></span>
+        <div class="timer-section">
+            <div class="timer-clock-ring">
+                <div id="clock-display" class="clock-display" role="timer" aria-live="off" aria-label="Tiempo de debate">--:--</div>
+            </div>
+            <p id="timer-label" class="timer-sublabel" role="status" aria-live="polite">TIEMPO DE DEBATE</p>
+        </div>
+
+        <div class="speaker-section">
+            <div id="role-panel" class="secret-header view-hidden">
+                <div id="role-badge" class="role-badge badge-crew"><span id="role-badge-text">TRIPULANTE</span></div>
+                <div class="secret-box">
+                    <p class="secret-label">TU PALABRA SECRETA ES:</p>
+                    <p id="secret-word" class="secret-word"></p>
+                </div>
+                <p id="secret-hint" class="secret-hint"></p>
+            </div>
+            <button id="btn-toggle-role" type="button" class="btn-secondary">
+                <span class="btn-icon" aria-hidden="true">👁️</span>
+                <span id="btn-toggle-role-text" class="btn-text">VER MI ROL</span>
+            </button>
+        </div>
+
+        <div id="debate-players" class="players-list" role="list"></div>
+
+        <button type="button" class="btn-primary" data-for="host" data-action="cerrar_debate">
+            <span class="btn-icon" aria-hidden="true">🗳️</span>
+            <span class="btn-text">ENVIAR A VOTACIÓN</span>
+        </button>
+        <p class="finished-description" data-for="guest">El anfitrión abrirá la votación cuando acabe el debate.</p>
+    </article>
+
+    <!-- VISTA: Votación -->
+    <article id="view-voting" class="voting-card view-hidden">
+        <div class="gavel-badge" aria-hidden="true">⚖️</div>
+        <h1 class="voting-headline">¿QUIÉN ES EL IMPOSTOR?</h1>
+        <p id="voting-status" class="voting-instruction"></p>
+        <div id="vote-options" class="voters-list" role="list"></div>
+        <button type="button" class="btn-primary" data-for="host" data-action="revelar">
+            <span class="btn-text">REVELAR RESULTADO</span>
+            <span class="btn-icon" aria-hidden="true">➔</span>
+        </button>
+    </article>
+
+    <!-- VISTA: Veredicto -->
+    <article id="view-result" class="verdict-card view-hidden">
+        <header class="verdict-header">
+            <div class="round-pill-badge"><span id="result-round"></span></div>
+            <div id="result-icon" class="verdict-badge-icon" aria-hidden="true"></div>
+            <span id="result-kicker" class="verdict-kicker"></span>
+            <h1 id="result-title" class="verdict-title"></h1>
+        </header>
+
+        <div class="verdict-details">
+            <div class="detail-box">
+                <span class="detail-label">MÁS VOTADO POR LA TRIPULACIÓN:</span>
+                <p id="result-voted" class="detail-highlight"></p>
+            </div>
+            <div class="detail-box">
+                <span id="result-impostors-label" class="detail-label"></span>
+                <p id="result-impostors" class="detail-impostor"></p>
+            </div>
+            <div id="result-free-box" class="detail-box">
+                <span class="detail-label">SIGUEN LIBRES:</span>
+                <p id="result-free" class="detail-impostor"></p>
+            </div>
+            <div class="detail-box">
+                <span class="detail-label">LA PALABRA SECRETA ERA:</span>
+                <p id="result-word" class="detail-word"></p>
+            </div>
+        </div>
+
+        <div class="result-actions">
+            <button id="btn-next" type="button" class="btn-primary" data-for="host" data-action="siguiente">
+                <span id="btn-next-text" class="btn-text"></span>
+            </button>
+            <p class="finished-description" data-for="guest">Esperando al anfitrión...</p>
+            <a href="{{ url_for('home.index') }}" class="btn-secondary">
+                <span class="btn-text">SALIR</span>
+            </a>
+        </div>
+    </article>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ url_for('static', filename='js/sala.js') }}" defer></script>
+{% endblock %}

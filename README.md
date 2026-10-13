@@ -15,6 +15,12 @@ A lightweight, responsive social deduction web game built with **Python (Flask)*
 5. **Vote & Verdict:** When time expires, players vote on who to eject. If the majority votes for the impostor, the crew wins! Otherwise, the impostor escapes.
 6. **Multi-round Support:** Automatically advance to the next round with fresh secret words and newly shuffled roles.
 
+### 🌐 Online Room Mode
+
+From the home screen, **CREAR SALA ONLINE** sets up the rules and opens a lobby with a 4-letter code. The host shares the room link; every player opens it on their own phone, picks a name and sees only their own role. The host (who also plays) starts the game, closes the debate and advances rounds; votes are cast from each phone and the verdict appears for everyone at once.
+
+> Rooms are kept in memory, so the server must run with a **single worker** (`gunicorn run:app` does by default). Rooms expire after 6 hours of inactivity and are lost if the server restarts.
+
 ---
 
 ## 🛠️ Tech Stack & Architecture
