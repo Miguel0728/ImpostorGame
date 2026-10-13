@@ -1,0 +1,164 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Configurar Partida | El Impostor{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/configurar.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="config-card" aria-labelledby="config-title">
+    <nav class="wizard-steps" aria-label="Progreso de configuración">
+        <div class="step-item step-active">
+            <span class="step-bubble">1</span>
+            <span class="step-text">Reglas</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item">
+            <span class="step-bubble">2</span>
+            <span class="step-text">Nombres</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item">
+            <span class="step-bubble">3</span>
+            <span class="step-text">Roles</span>
+        </div>
+    </nav>
+
+    <header class="config-header">
+        <a href="{{ url_for('home.index') }}" class="btn-back" aria-label="Volver al inicio">
+            <span aria-hidden="true">←</span> Volver
+        </a>
+        <h1 id="config-title" class="config-title">CONFIGURAR PARTIDA</h1>
+        <p class="config-subtitle">Ajusta las reglas de la misión antes del despegue</p>
+    </header>
+
+    <form id="config-form" class="config-form" method="POST" action="{{ url_for('game.configurar') }}">
+        <!-- Configuración de Jugadores -->
+        <div class="form-group">
+            <div class="group-info">
+                <label for="players-input" class="group-label">Jugadores</label>
+                <span class="group-hint">Entre 3 y 12 tripulantes</span>
+            </div>
+            <div class="stepper-control">
+                <button type="button" class="btn-stepper" id="btn-sub-players" aria-label="Disminuir jugadores">-</button>
+                <input type="number" id="players-input" name="players" class="stepper-value" value="{{ config.players }}" min="3" max="12" readonly>
+                <button type="button" class="btn-stepper" id="btn-add-players" aria-label="Aumentar jugadores">+</button>
+            </div>
+        </div>
+
+        <!-- Configuración de Impostores -->
+        <div class="form-group">
+            <div class="group-info">
+                <label for="impostors-input" class="group-label">Impostores</label>
+                <span class="group-hint" id="impostors-hint">Máximo 1 para 4 jugadores</span>
+            </div>
+            <div class="stepper-control">
+                <button type="button" class="btn-stepper" id="btn-sub-impostors" aria-label="Disminuir impostores">-</button>
+                <input type="number" id="impostors-input" name="impostors" class="stepper-value stepper-danger" value="{{ config.impostors }}" min="1" max="3" readonly>
+                <button type="button" class="btn-stepper" id="btn-add-impostors" aria-label="Aumentar impostores">+</button>
+            </div>
+        </div>
+
+        <!-- Configuración de Rondas -->
+        <div class="form-group">
+            <div class="group-info">
+                <label class="group-label">Rondas</label>
+                <span class="group-hint">Cantidad de turnos de debate</span>
+            </div>
+            <div class="pill-group" role="radiogroup" aria-label="Seleccionar rondas">
+                {% for r in [1, 2, 3, 5] %}
+                <label class="pill-option">
+                    <input type="radio" name="rounds" value="{{ r }}" {% if r == config.rounds %}checked{% endif %}>
+                    <span class="pill-badge">{{ r }}</span>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Configuración de Tiempo -->
+        <div class="form-group">
+            <div class="group-info">
+                <label class="group-label">Tiempo de Debate</label>
+                <span class="group-hint">Duración del reloj por ronda</span>
+            </div>
+            <div class="pill-group" role="radiogroup" aria-label="Seleccionar tiempo">
+                <label class="pill-option">
+                    <input type="radio" name="time_seconds" value="60" {% if config.time_seconds == 60 %}checked{% endif %}>
+                    <span class="pill-badge">60s</span>
+                </label>
+                <label class="pill-option">
+                    <input type="radio" name="time_seconds" value="90" {% if config.time_seconds == 90 %}checked{% endif %}>
+                    <span class="pill-badge">90s</span>
+                </label>
+                <label class="pill-option">
+                    <input type="radio" name="time_seconds" value="120" {% if config.time_seconds == 120 %}checked{% endif %}>
+                    <span class="pill-badge">2 min</span>
+                </label>
+                <label class="pill-option">
+                    <input type="radio" name="time_seconds" value="0" {% if config.time_seconds == 0 %}checked{% endif %}>
+                    <span class="pill-badge">Libre</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Configuración de Categoría / Palabras Propias -->
+        <div class="form-group">
+            <div class="group-info">
+                <label id="category-dropdown-label" class="group-label">Categoría de Palabras</label>
+                <span class="group-hint">Vocabulario secreto para la tripulación</span>
+            </div>
+
+            <div class="custom-dropdown" id="category-dropdown">
+                <input type="hidden" id="category-input" name="category" value="{{ config.category }}">
+                
+                <button type="button" class="dropdown-trigger" id="dropdown-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="category-dropdown-label dropdown-selected-text">
+                    <span id="dropdown-selected-text" class="dropdown-selected-text">
+                        {% for cat in categories %}
+                            {% if cat.id == config.category %}{{ cat.name }}{% endif %}
+                        {% endfor %}
+                    </span>
+                    <span class="dropdown-chevron" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </span>
+                </button>
+
+                <ul class="dropdown-menu" id="dropdown-menu" role="listbox" aria-labelledby="category-dropdown-label">
+                    {% for cat in categories %}
+                    <li class="dropdown-item {% if cat.id == config.category %}is-selected{% endif %}" 
+                        role="option" 
+                        data-value="{{ cat.id }}" 
+                        aria-selected="{% if cat.id == config.category %}true{% else %}false{% endif %}">
+                        <span class="item-name">{{ cat.name }}</span>
+                        <span class="item-check" aria-hidden="true">✓</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Bloque condicional: Palabras Propias -->
+        <div id="custom-words-container" class="form-group{% if config.category != 'personalizada' %} custom-words-hidden{% endif %}">
+            <div class="group-info">
+                <label for="custom-words-input" class="group-label">Tus Palabras Propias</label>
+                <span class="group-hint">Escribe al menos 3 palabras separadas por comas</span>
+            </div>
+            <textarea id="custom-words-input" name="custom_words" class="custom-textarea" rows="3" placeholder="Ej: Pirámide, Submarino, Astronauta, Volcán" aria-describedby="config-error">{{ config.custom_words }}</textarea>
+            <p id="config-error" class="form-error{% if not error %} view-hidden{% endif %}" role="alert">{{ error or "" }}</p>
+        </div>
+
+        <div class="action-container">
+            <button type="submit" class="btn-primary">
+                <span class="btn-text">CONTINUAR A JUGADORES</span>
+                <span class="btn-icon" aria-hidden="true">➔</span>
+            </button>
+        </div>
+    </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ url_for('static', filename='js/configurar.js') }}" defer></script>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Nombrar Tripulantes | El Impostor{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jugadores.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="players-card" aria-labelledby="players-title">
+    <nav class="wizard-steps" aria-label="Progreso de configuración">
+        <div class="step-item step-completed">
+            <span class="step-bubble">✓</span>
+            <span class="step-text">Reglas</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item step-active">
+            <span class="step-bubble">2</span>
+            <span class="step-text">Nombres</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item">
+            <span class="step-bubble">3</span>
+            <span class="step-text">Roles</span>
+        </div>
+    </nav>
+
+    <header class="players-header">
+        <a href="{{ url_for('game.configurar') }}" class="btn-back" aria-label="Volver a configuración">
+            <span aria-hidden="true">←</span> Configuración
+        </a>
+        <h1 id="players-title" class="players-title">TRIPULACIÓN</h1>
+        <p class="players-subtitle">Escribe el nombre o alias de los {{ config.players }} jugadores</p>
+    </header>
+
+    <form id="players-form" class="players-form" method="POST" action="{{ url_for('game.jugadores') }}">
+        <p id="players-error" class="form-error{% if not error %} view-hidden{% endif %}" role="alert">{{ error or "" }}</p>
+
+        <div class="players-list" role="list">
+            {% for slot in slots %}
+            <div class="player-slot color-theme-{{ slot.color_index }}" role="listitem">
+                <div class="player-avatar" aria-hidden="true">
+                    <span class="player-number">{{ slot.id }}</span>
+                </div>
+                <div class="player-field">
+                    <label for="player-input-{{ slot.id }}" class="player-label">Jugador {{ slot.id }}</label>
+                    <input 
+                        type="text" 
+                        id="player-input-{{ slot.id }}" 
+                        name="player_name" 
+                        class="player-input" 
+                        value="{{ slot.placeholder }}" 
+                        placeholder="Nombre o apodo" 
+                        maxlength="16" 
+                        autocomplete="off" 
+                        required>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="action-container">
+            <button type="submit" class="btn-primary">
+                <span class="btn-text">REPARTIR ROLES</span>
+                <span class="btn-icon" aria-hidden="true">➔</span>
+            </button>
+        </div>
+    </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ url_for('static', filename='js/jugadores.js') }}" defer></script>
+{% endblock %}

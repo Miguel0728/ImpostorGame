@@ -1,0 +1,77 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Debate en Curso | El Impostor{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/juego.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="gameplay-viewport" aria-labelledby="gameplay-title">
+    <header class="gameplay-header">
+        <a href="{{ url_for('game.roles') }}" class="btn-back" aria-label="Volver a reparto de roles">
+            <span aria-hidden="true">←</span> Roles
+        </a>
+        <div class="round-badge">
+            <span class="round-label">RONDA {{ gameplay.current_round }} DE {{ gameplay.total_rounds }}</span>
+        </div>
+    </header>
+
+    <article class="debate-card">
+        <!-- SECCIÓN 1: TEMPORIZADOR CONTINUO -->
+        <div class="timer-section" id="timer-box">
+            <div class="timer-clock-ring">
+                <div class="clock-display" id="clock-display" role="timer" aria-live="off" aria-label="Tiempo de debate">02:00</div>
+            </div>
+            <p class="timer-sublabel" id="timer-status-label" role="status" aria-live="polite">TIEMPO DE DEBATE</p>
+        </div>
+
+        <!-- SECCIÓN 2: TURNO DEL JUGADOR -->
+        <div class="speaker-section">
+            <div class="speaker-avatar-wrapper">
+                <div id="speaker-avatar" class="speaker-avatar color-theme-1" aria-hidden="true">
+                    <span id="speaker-number">1</span>
+                </div>
+            </div>
+
+            <div class="speaker-info">
+                <span class="speaker-caption">EN TURNO DE HABLAR:</span>
+                <h1 id="gameplay-title" class="speaker-name" aria-live="polite">Tripulante 1</h1>
+                <span class="speaker-counter">
+                    Jugador <strong id="speaker-index">1</strong> de <strong>{{ gameplay.players|length }}</strong>
+                </span>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: ACCIONES DE RONDA -->
+        <div class="gameplay-actions">
+            <!-- Botón para rotar jugadores (el temporizador no se detiene) -->
+            <button id="btn-next-turn" type="button" class="btn-secondary">
+                <span class="btn-text">PASAR TURNO AL SIGUIENTE</span>
+                <span class="btn-icon" aria-hidden="true">➔</span>
+            </button>
+
+            <!-- Botón principal de votación (aparece al agotarse el tiempo) -->
+            <div id="vote-container" class="vote-container view-hidden">
+                <a id="btn-go-to-vote" href="{{ url_for('game.votacion') }}" class="btn-primary btn-vote">
+                    <span class="btn-icon" aria-hidden="true">🗳️</span>
+                    <span class="btn-text">IR A VOTACIÓN</span>
+                    <span class="btn-icon" aria-hidden="true">➔</span>
+                </a>
+            </div>
+
+            <!-- Opción para avanzar voluntariamente si ya debatieron -->
+            <button id="btn-force-vote" type="button" class="btn-link">
+                Terminar debate antes de tiempo
+            </button>
+        </div>
+    </article>
+
+    <!-- Datos estructurados inyectados de forma segura -->
+    <script id="gameplay-data" type="application/json">{{ gameplay|tojson }}</script>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ url_for('static', filename='js/juego.js') }}" defer></script>
+{% endblock %}

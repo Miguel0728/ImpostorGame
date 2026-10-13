@@ -1,0 +1,46 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Inicio | ¿Quién es el Impostor?{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="welcome-card" aria-labelledby="game-title">
+    <header class="welcome-header">
+        <div class="character-badge" aria-hidden="true">
+            <svg class="character-svg" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Cuerpo / Traje espacial -->
+                <path d="M50 15C30 15 22 30 22 55V95C22 100 26 105 32 105H40V90H60V105H68C74 105 78 100 78 95V55C78 30 70 15 50 15Z" fill="#E63946" stroke="#1D2A44" stroke-width="4"/>
+                <!-- Mochila -->
+                <rect x="12" y="38" width="10" height="42" rx="5" fill="#C1121F" stroke="#1D2A44" stroke-width="4"/>
+                <!-- Visor -->
+                <ellipse cx="60" cy="46" rx="22" ry="14" fill="#90E0EF" stroke="#1D2A44" stroke-width="4"/>
+                <ellipse cx="64" cy="42" rx="14" ry="6" fill="#FFFFFF" opacity="0.75"/>
+                <!-- Sombra / Misterio -->
+                <circle cx="50" cy="112" r="26" fill="rgba(0, 0, 0, 0.35)"/>
+            </svg>
+        </div>
+        <p class="tagline">Misión en la Nave Orbital</p>
+        <h1 id="game-title" class="game-title">¿QUIÉN ES EL<br><span class="accent-title">IMPOSTOR?</span></h1>
+    </header>
+
+    <div class="welcome-body">
+        <p class="game-description">
+            Uno de los miembros de la tripulación guarda un secreto. Encuéntralo antes de que sea demasiado tarde.
+        </p>
+
+        <div class="action-container">
+            <a class="btn-primary" href="{{ url_for('game.configurar') }}">
+                <span class="btn-text">INICIAR PARTIDA</span>
+                <span class="btn-icon" aria-hidden="true">➔</span>
+            </a>
+        </div>
+    </div>
+
+    <footer class="welcome-footer">
+        <span class="version-label">Modo Fiesta • 3 a 12 Jugadores</span>
+    </footer>
+</section>
+{% endblock %}

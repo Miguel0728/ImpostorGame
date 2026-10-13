@@ -1,0 +1,63 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Votación | El Impostor{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/votacion.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="voting-viewport" aria-labelledby="voting-title">
+    <header class="voting-header">
+        <a href="{{ url_for('game.juego') }}" class="btn-back" aria-label="Volver al debate">
+            <span aria-hidden="true">←</span> Debate
+        </a>
+        <div class="voting-badge">
+            <span class="badge-text">FASE DE JUICIO</span>
+        </div>
+    </header>
+
+    <article class="voting-card">
+        <div class="gavel-badge" aria-hidden="true">⚖️</div>
+        <h1 id="voting-title" class="voting-headline">VOTACIÓN DE LA TRIPULACIÓN</h1>
+        <p class="voting-instruction">
+            Selecciona a quién acusa cada tripulante. El jugador con la mayoría de votos será expulsado de la nave.
+        </p>
+
+        <form id="voting-form" class="voting-form" method="POST" action="{{ url_for('game.votacion') }}">
+            <div class="voters-list" role="list">
+                {% for voter in players %}
+                <div class="voter-slot color-theme-{{ voter.color_index }}" role="listitem">
+                    <div class="voter-identity">
+                        <div class="voter-avatar" aria-hidden="true">
+                            <span>{{ voter.id }}</span>
+                        </div>
+                        <span class="voter-name">{{ voter.name }}</span>
+                    </div>
+
+                    <div class="voter-choice">
+                        <label for="vote-select-{{ voter.id }}" class="choice-label">Acusa a:</label>
+                        <select id="vote-select-{{ voter.id }}" name="voted_target" class="voting-select" required>
+                            <option value="" disabled selected>Elegir sospechoso...</option>
+                            {% for candidate in players %}
+                                {% if candidate.name != voter.name %}
+                                <option value="{{ candidate.name }}">{{ candidate.name }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="action-container">
+                <button type="submit" class="btn-primary">
+                    <span class="btn-icon" aria-hidden="true">🗳️</span>
+                    <span class="btn-text">CONTAR VOTOS Y REVELAR</span>
+                    <span class="btn-icon" aria-hidden="true">➔</span>
+                </button>
+            </div>
+        </form>
+    </article>
+</section>
+{% endblock %}

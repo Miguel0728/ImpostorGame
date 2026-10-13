@@ -1,0 +1,112 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Reparto de Roles | El Impostor{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/roles.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="roles-viewport" aria-labelledby="roles-main-title">
+    <nav class="wizard-steps" aria-label="Progreso de configuración">
+        <div class="step-item step-completed">
+            <span class="step-bubble">✓</span>
+            <span class="step-text">Reglas</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item step-completed">
+            <span class="step-bubble">✓</span>
+            <span class="step-text">Nombres</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item step-active">
+            <span class="step-bubble">3</span>
+            <span class="step-text">Roles</span>
+        </div>
+    </nav>
+
+    <header class="roles-header">
+        <a href="{{ url_for('game.jugadores') }}" class="btn-back" aria-label="Volver a lista de jugadores">
+            <span aria-hidden="true">←</span> Jugadores
+        </a>
+        <div class="pass-progress" id="pass-progress-container">
+            <span class="progress-pill">
+                Tripulante <strong id="progress-current">1</strong> de <strong>{{ roles_data|length }}</strong>
+            </span>
+        </div>
+    </header>
+
+    <!-- FASE 1: Cortina de Privacidad (Pásalo) -->
+    <article id="card-privacy" class="game-card privacy-card" aria-live="polite">
+        <div class="astronaut-badge" aria-hidden="true">
+            <div id="privacy-avatar" class="avatar-ring color-theme-1">
+                <span id="privacy-number" class="avatar-number">1</span>
+            </div>
+        </div>
+
+        <p class="card-tagline">MODO PÁSALO</p>
+        <h1 id="roles-main-title" class="instruction-label">PÁSALE EL TELÉFONO A:</h1>
+        <h2 id="privacy-player-name" class="player-headline">Tripulante 1</h2>
+
+        <p class="privacy-warning">
+            Asegúrate de que nadie más esté mirando la pantalla antes de revelar tu rol.
+        </p>
+
+        <div class="action-container">
+            <button id="btn-reveal-role" type="button" class="btn-primary">
+                <span class="btn-icon" aria-hidden="true">👁️</span>
+                <span class="btn-text">VER ROL</span>
+            </button>
+        </div>
+    </article>
+
+    <!-- FASE 2: Revelación Secreta del Rol -->
+    <article id="card-secret" class="game-card secret-card view-hidden" aria-live="polite">
+        <div class="secret-header">
+            <span id="secret-player-title" class="secret-player-name">Tripulante 1</span>
+            <div id="role-badge" class="role-badge badge-crew">
+                <span id="role-badge-text">TRIPULANTE</span>
+            </div>
+        </div>
+
+        <div class="secret-box" id="secret-box">
+            <p id="secret-label" class="secret-label">TU PALABRA SECRETA ES:</p>
+            <p id="secret-word" class="secret-word">CASTILLO</p>
+        </div>
+
+        <p id="secret-hint" class="secret-hint">
+            Descubre quién de tus compañeros no conoce esta palabra.
+        </p>
+
+        <div class="action-container">
+            <button id="btn-hide-and-next" type="button" class="btn-secondary">
+                <span class="btn-text" id="btn-hide-text">OCULTAR Y PASAR TELÉFONO</span>
+                <span class="btn-icon" aria-hidden="true">➔</span>
+            </button>
+        </div>
+    </article>
+
+    <!-- FASE 3: Conclusión del reparto (Listos para debatir) -->
+    <article id="card-finished" class="game-card finished-card view-hidden" aria-live="polite">
+        <div class="rocket-icon" aria-hidden="true">🚀</div>
+        <h2 class="finished-title">¡TODOS LOS ROLES ENTREGADOS!</h2>
+        <p class="finished-description">
+            Cada tripulante tiene su secreto asignado. El debate y la deducción están a punto de comenzar.
+        </p>
+
+        <div class="action-container">
+            <a href="{{ url_for('game.juego') }}" class="btn-primary">
+                <span class="btn-text">COMENZAR DEBATE</span>
+                <span class="btn-icon" aria-hidden="true">➔</span>
+            </a>
+        </div>
+    </article>
+
+    <!-- Datos estructurados inyectados de forma segura -->
+    <script id="roles-data" type="application/json">{{ roles_data|tojson }}</script>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ url_for('static', filename='js/roles.js') }}" defer></script>
+{% endblock %}

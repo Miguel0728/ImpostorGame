@@ -1,0 +1,106 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Veredicto Ronda {{ outcome.current_round }} | El Impostor{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/resultado.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="result-viewport" aria-labelledby="verdict-title">
+    <article class="verdict-card {% if outcome.impostor_caught %}card-crew-win{% else %}card-impostor-win{% endif %}">
+        <header class="verdict-header">
+            <div class="round-pill-badge">
+                <span>RONDA {{ outcome.current_round }} DE {{ outcome.total_rounds }}</span>
+            </div>
+
+            <div class="verdict-badge-icon" aria-hidden="true">
+                {% if outcome.impostor_caught %}🏆{% else %}😈{% endif %}
+            </div>
+            
+            <span class="verdict-kicker">
+                {% if outcome.free_impostors %}SOLO PIERDE EL EXPULSADO{% elif outcome.impostor_caught %}VICTORIA DE LA TRIPULACIÓN{% else %}VICTORIA DEL IMPOSTOR{% endif %}
+            </span>
+
+            <h1 id="verdict-title" class="verdict-title">
+                {% if outcome.free_impostors %}
+                    ¡UN IMPOSTOR FUE EXPULSADO, PERO QUEDAN LIBRES!
+                {% elif outcome.impostor_caught %}
+                    ¡EL IMPOSTOR FUE EXPULSADO!
+                {% else %}
+                    ¡EL IMPOSTOR LOGRÓ ENGAÑAR A TODOS!
+                {% endif %}
+            </h1>
+        </header>
+
+        <div class="verdict-details">
+            <!-- Sospechoso más votado -->
+            <div class="detail-box">
+                <span class="detail-label">MÁS VOTADO POR LA TRIPULACIÓN:</span>
+                <p class="detail-highlight">
+                    {% if outcome.most_voted %}
+                        {{ outcome.most_voted.name }} ({{ outcome.top_votes }} votos)
+                    {% else %}
+                        Empate / Sin mayoría
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Identidad real de los impostores -->
+            <div class="detail-box">
+                {% if outcome.free_impostors %}
+                <span class="detail-label">IMPOSTOR EXPULSADO:</span>
+                <p class="detail-impostor">{{ outcome.most_voted.name }}</p>
+                {% else %}
+                <span class="detail-label">IDENTIDAD DEL IMPOSTOR REAL:</span>
+                <p class="detail-impostor">
+                    {% for imp in outcome.impostors %}
+                        {{ imp.name }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+                {% endif %}
+            </div>
+
+            <!-- Impostores que siguen libres (solo pierde el expulsado) -->
+            {% if outcome.free_impostors %}
+            <div class="detail-box">
+                <span class="detail-label">SIGUEN LIBRES:</span>
+                <p class="detail-impostor">
+                    {% for imp in outcome.free_impostors %}
+                        {{ imp.name }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+            </div>
+            {% endif %}
+
+            <!-- Palabra secreta -->
+            <div class="detail-box">
+                <span class="detail-label">LA PALABRA SECRETA ERA:</span>
+                <p class="detail-word">{{ outcome.secret_word }}</p>
+            </div>
+        </div>
+
+        <div class="result-actions">
+            {% if outcome.has_next_round %}
+                <!-- Si aún quedan rondas en la partida -->
+                <a href="{{ url_for('game.siguiente_ronda') }}" class="btn-primary">
+                    <span class="btn-icon" aria-hidden="true">➔</span>
+                    <span class="btn-text">INICIAR RONDA {{ outcome.next_round }} DE {{ outcome.total_rounds }}</span>
+                </a>
+                <a href="{{ url_for('home.index') }}" class="btn-secondary">
+                    <span class="btn-text">TERMINAR PARTIDA Y SALIR</span>
+                </a>
+            {% else %}
+                <!-- Si es la última ronda de la partida -->
+                <a href="{{ url_for('game.configurar') }}" class="btn-primary">
+                    <span class="btn-icon" aria-hidden="true">🔄</span>
+                    <span class="btn-text">JUGAR DE NUEVO</span>
+                </a>
+                <a href="{{ url_for('home.index') }}" class="btn-secondary">
+                    <span class="btn-text">VOLVER AL INICIO</span>
+                </a>
+            {% endif %}
+        </div>
+    </article>
+</section>
+{% endblock %}
