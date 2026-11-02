@@ -5,15 +5,23 @@ from app.services.game_service import (
     get_available_categories,
     validate_configuration
 )
-from app.services.room_service import apply_action, build_room_state, create_room, get_room, new_token
+from app.services.rate_limit_service import is_limited, record_creation
+from app.services.room_service import (
+    RoomCreationError,
+    apply_action,
+    build_room_state,
+    create_room,
+    get_room,
+    new_token
+)
 
 room_bp = Blueprint("room", __name__)
 
 
-def _render_configuration(config, error=None):
-    """Renderiza el formulario de reglas en modo sala; responde 400 si hay un error de validación."""
+def _render_configuration(config, error=None, status=400):
+    """Renderiza el formulario de reglas en modo sala; si hay un error responde con su código (400 por defecto)."""
     categories = get_available_categories()
-    return render_template("setup/configurar.html", categories=categories, config=config, error=error, online=True), (400 if error else 200)
+    return render_template("setup/configurar.html", categories=categories, config=config, error=error, online=True), (status if error else 200)
 
 
 def _remember_token(code, token):
@@ -42,7 +50,13 @@ def nueva():
     error = validate_configuration(config)
     if error:
         return _render_configuration(config, error)
-    code, host_token = create_room(config)
+    if is_limited(request.remote_addr):
+        return _render_configuration(config, "Has creado muchas salas en poco tiempo. Inténtalo de nuevo más tarde.", 429)
+    try:
+        code, host_token = create_room(config)
+    except RoomCreationError as problem:
+        return _render_configuration(config, str(problem), 503)
+    record_creation(request.remote_addr)
     _remember_token(code, host_token)
     return redirect(url_for("room.sala", code=code))
 

@@ -1,41 +1,60 @@
 const debateState = {
     players: [],
     currentSpeakerIndex: 0,
-    remainingSeconds: 0,
+    totalSeconds: 0,
+    startedAt: 0,
     timerIntervalId: null,
-    isFreeTime: false
+    isFreeTime: false,
+    saved: {}
 };
 
 document.addEventListener("DOMContentLoaded", initGameplayPage);
 
 function initGameplayPage() {
-    loadGameplayData();
+    if (!loadGameplayData()) return;
     document.getElementById("btn-next-turn").addEventListener("click", handleNextTurnClick);
     document.getElementById("btn-force-vote").addEventListener("click", handleTimeExpired);
     renderCurrentSpeaker();
     debateState.timerIntervalId = setInterval(tickTimer, 1000);
+    tickTimer();
 }
 
 function loadGameplayData() {
-    const data = JSON.parse(document.getElementById("gameplay-data").textContent);
+    const state = ModoLocal.loadState();
+    if (!ModoLocal.hasGameInProgress(state)) {
+        window.location.replace(document.querySelector("[data-config-url]").dataset.configUrl);
+        return false;
+    }
+    const data = ModoLocal.getGameplayData(state);
+    state.phase = "debate";
+    state.debate = state.debate || { started_at: Date.now(), speaker: 0 };
+    ModoLocal.saveState(state);
+    debateState.saved = state;
     debateState.players = data.players;
     debateState.isFreeTime = data.time_seconds === 0;
-    debateState.remainingSeconds = data.time_seconds;
-    updateTimerDisplay(data.time_seconds);
+    debateState.totalSeconds = data.time_seconds;
+    debateState.startedAt = state.debate.started_at;
+    debateState.currentSpeakerIndex = state.debate.speaker % data.players.length;
+    document.getElementById("round-current").textContent = String(data.current_round);
+    document.getElementById("round-total").textContent = String(data.total_rounds);
+    document.getElementById("speaker-total").textContent = String(data.players.length);
     if (debateState.isFreeTime) setStatusLabel("DEBATE LIBRE");
+    return true;
 }
 
 function setStatusLabel(text) {
     document.getElementById("timer-status-label").textContent = text;
 }
 
+function currentSeconds() {
+    const elapsed = Math.max(0, Math.floor((Date.now() - debateState.startedAt) / 1000));
+    return debateState.isFreeTime ? elapsed : Math.max(0, debateState.totalSeconds - elapsed);
+}
+
 function tickTimer() {
-    if (!debateState.isFreeTime && debateState.remainingSeconds <= 1) {
-        handleTimeExpired();
-        return;
-    }
-    debateState.remainingSeconds += debateState.isFreeTime ? 1 : -1;
-    updateTimerDisplay(debateState.remainingSeconds);
+    const seconds = currentSeconds();
+    updateTimerDisplay(seconds);
+    if (!debateState.isFreeTime && seconds <= 0) handleTimeExpired();
 }
 
 function updateTimerDisplay(seconds) {
@@ -68,6 +87,8 @@ function switchButtonsForVoting() {
 
 function handleNextTurnClick() {
     debateState.currentSpeakerIndex = (debateState.currentSpeakerIndex + 1) % debateState.players.length;
+    debateState.saved.debate.speaker = debateState.currentSpeakerIndex;
+    ModoLocal.saveState(debateState.saved);
     renderCurrentSpeaker();
 }
 

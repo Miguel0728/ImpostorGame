@@ -1,7 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120">
-  <rect width="100" height="120" rx="22" fill="#0B0E17"/>
-  <path d="M50 15C30 15 22 30 22 55V95C22 100 26 105 32 105H40V90H60V105H68C74 105 78 100 78 95V55C78 30 70 15 50 15Z" fill="#E63946" stroke="#1D2A44" stroke-width="4"/>
-  <rect x="12" y="38" width="10" height="42" rx="5" fill="#C1121F" stroke="#1D2A44" stroke-width="4"/>
-  <ellipse cx="60" cy="46" rx="22" ry="14" fill="#90E0EF" stroke="#1D2A44" stroke-width="4"/>
-  <ellipse cx="64" cy="42" rx="14" ry="6" fill="#FFFFFF" opacity="0.75"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Sospecha">
+  <defs>
+    <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFB627" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#FFB627" stop-opacity="0.18"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="#131417"/>
+  <polygon points="214,0 298,0 470,512 42,512" fill="url(#beam)"/>
+  <path d="M132 276 C 196 268 236 212 388 232" fill="none" stroke="#F4EFE6" stroke-width="40" stroke-linecap="round"/>
+  <path d="M168 346 C 216 394 296 394 344 346 C 296 322 216 322 168 346 Z" fill="#131417" stroke="#F4EFE6" stroke-width="22" stroke-linejoin="round"/>
+  <circle cx="256" cy="358" r="22" fill="#F4EFE6"/>
 </svg>

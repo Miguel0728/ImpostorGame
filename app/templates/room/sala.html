@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
 
-{% block title %}Sala {{ code }} | El Impostor{% endblock %}
+{% block title %}Sala {{ code }} | Sospecha{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/jugadores.css') }}">
@@ -66,7 +66,7 @@
 
         <div class="speaker-section">
             <div id="role-panel" class="secret-header view-hidden">
-                <div id="role-badge" class="role-badge badge-crew"><span id="role-badge-text">TRIPULANTE</span></div>
+                <div id="role-badge" class="role-badge badge-player"><span id="role-badge-text">JUGADOR</span></div>
                 <div class="secret-box">
                     <p class="secret-label">TU PALABRA SECRETA ES:</p>
                     <p id="secret-word" class="secret-word"></p>
@@ -91,7 +91,7 @@
     <!-- VISTA: Votación -->
     <article id="view-voting" class="voting-card view-hidden">
         <div class="gavel-badge" aria-hidden="true">⚖️</div>
-        <h1 class="voting-headline">¿QUIÉN ES EL IMPOSTOR?</h1>
+        <h1 class="voting-headline">¿EN QUIÉN SOSPECHAS?</h1>
         <p id="voting-status" class="voting-instruction"></p>
         <div id="vote-options" class="voters-list" role="list"></div>
         <button type="button" class="btn-primary" data-for="host" data-action="revelar">
@@ -111,7 +111,7 @@
 
         <div class="verdict-details">
             <div class="detail-box">
-                <span class="detail-label">MÁS VOTADO POR LA TRIPULACIÓN:</span>
+                <span class="detail-label">MÁS VOTADO POR EL GRUPO:</span>
                 <p id="result-voted" class="detail-highlight"></p>
             </div>
             <div class="detail-box">

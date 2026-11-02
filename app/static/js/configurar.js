@@ -8,6 +8,7 @@ function initConfigurationPage() {
     bindStepper("players", updatePlayers);
     bindStepper("impostors", updateImpostors);
     setupCustomDropdown();
+    if (isLocalMode()) applySavedConfiguration();
     syncImpostorsLimit();
     toggleCustomWordsVisibility();
     document.getElementById("config-form").addEventListener("submit", handleConfigSubmit);
@@ -43,7 +44,7 @@ function syncImpostorsLimit() {
     const players = getPlayersCount();
     const maxAllowed = getMaxImpostors(players);
     stepInput(document.getElementById("impostors-input"), 0, 1, maxAllowed);
-    document.getElementById("impostors-hint").textContent = `Máximo ${maxAllowed} para ${players} tripulantes`;
+    document.getElementById("impostors-hint").textContent = `Máximo ${maxAllowed} para ${players} jugadores`;
 }
 
 function getDropdownItems() {
@@ -147,7 +148,33 @@ function countCustomWords(text) {
     return new Set(words.filter(Boolean)).size;
 }
 
+function isLocalMode() {
+    return document.getElementById("config-form").dataset.mode === "local";
+}
+
+function checkRadio(name, value) {
+    const radio = document.querySelector(`input[name="${name}"][value="${value}"]`);
+    if (radio) radio.checked = true;
+}
+
+function applySavedConfiguration() {
+    const config = ModoLocal.loadState().config;
+    if (!config) return;
+    document.getElementById("players-input").value = config.players;
+    document.getElementById("impostors-input").value = config.impostors;
+    checkRadio("rounds", config.rounds);
+    checkRadio("time_seconds", config.time_seconds);
+    document.getElementById("custom-words-input").value = config.custom_words;
+    const item = getDropdownItems().find(option => option.dataset.value === config.category);
+    if (item) selectCategoryOption(item);
+}
+
 function handleConfigSubmit(event) {
+    if (isLocalMode()) {
+        event.preventDefault();
+        saveLocalConfiguration(event.currentTarget);
+        return;
+    }
     const textarea = document.getElementById("custom-words-input");
     const isCustom = document.getElementById("category-input").value === "personalizada";
     if (isCustom && countCustomWords(textarea.value) < MIN_CUSTOM_WORDS) {
@@ -156,9 +183,32 @@ function handleConfigSubmit(event) {
     }
 }
 
-function showCustomWordsError(textarea) {
+function saveLocalConfiguration(form) {
+    const categoryIds = getDropdownItems().map(item => item.dataset.value);
+    const config = ModoLocal.buildConfiguration(Object.fromEntries(new FormData(form)), categoryIds);
+    const error = ModoLocal.validateConfiguration(config);
+    if (error) {
+        showCustomWordsError(document.getElementById("custom-words-input"), error);
+        return;
+    }
+    const state = ModoLocal.loadState();
+    ModoLocal.saveConfiguration(state, config);
+    if (!ModoLocal.saveState(state)) {
+        showFormError("No se pudo guardar la partida en este dispositivo.");
+        return;
+    }
+    window.location.assign(form.dataset.nextUrl);
+}
+
+function showFormError(message) {
+    const box = document.getElementById("config-form-error");
+    box.textContent = message;
+    box.classList.remove("view-hidden");
+}
+
+function showCustomWordsError(textarea, message = `Escribe al menos ${MIN_CUSTOM_WORDS} palabras distintas separadas por comas.`) {
     const box = document.getElementById("config-error");
-    box.textContent = `Escribe al menos ${MIN_CUSTOM_WORDS} palabras distintas separadas por comas.`;
+    box.textContent = message;
     box.classList.remove("view-hidden");
     textarea.classList.add("input-error");
     textarea.focus();

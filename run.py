@@ -1,3 +1,9 @@
+import os
+
+if __name__ == "__main__":
+    # Ejecutar este archivo directamente es el modo de desarrollo; en producción se usa gunicorn.
+    os.environ.setdefault("FLASK_DEBUG", "1")
+
 from app import create_app
 
 app = create_app()

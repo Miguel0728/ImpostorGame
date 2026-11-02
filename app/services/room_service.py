@@ -18,9 +18,15 @@ from app.services.game_service import (
 ROOM_CODE_LETTERS = "ABCDEFGHJKMNPQRSTUVWXYZ"
 ROOM_CODE_LENGTH = 4
 ROOM_TTL_SECONDS = 6 * 3600
+MAX_ROOMS = 500
+CODE_ATTEMPTS = 50
 
 # Las salas viven en memoria: el servidor debe ejecutarse con un único worker.
 ROOMS = {}
+
+
+class RoomCreationError(Exception):
+    """El servidor no puede abrir otra sala ahora; el mensaje se puede mostrar al usuario."""
 
 
 def new_token():
@@ -29,11 +35,12 @@ def new_token():
 
 
 def _new_code():
-    """Genera un código de sala corto que no esté en uso."""
-    while True:
+    """Genera un código de sala corto que no esté en uso; se rinde tras varios intentos fallidos."""
+    for _ in range(CODE_ATTEMPTS):
         code = "".join(random.choices(ROOM_CODE_LETTERS, k=ROOM_CODE_LENGTH))
         if code not in ROOMS:
             return code
+    raise RoomCreationError("No pudimos generar un código de sala libre. Inténtalo de nuevo en unos minutos.")
 
 
 def _purge_expired_rooms():
@@ -46,6 +53,8 @@ def _purge_expired_rooms():
 def create_room(config):
     """Crea una sala en el lobby con la configuración ya validada; retorna (código, token del anfitrión)."""
     _purge_expired_rooms()
+    if len(ROOMS) >= MAX_ROOMS:
+        raise RoomCreationError("Hay muchas salas abiertas en este momento. Inténtalo de nuevo en unos minutos.")
     code, host = _new_code(), new_token()
     ROOMS[code] = {
         "config": config,

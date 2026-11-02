@@ -1,19 +1,19 @@
 {% extends "layout/base.html" %}
 
-{% block title %}Debate en Curso | El Impostor{% endblock %}
+{% block title %}Debate en Curso | Sospecha{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/juego.css') }}">
 {% endblock %}
 
 {% block content %}
-<section class="gameplay-viewport" aria-labelledby="gameplay-title">
+<section class="gameplay-viewport" aria-labelledby="gameplay-title" data-config-url="{{ url_for('game.configurar') }}">
     <header class="gameplay-header">
         <a href="{{ url_for('game.roles') }}" class="btn-back" aria-label="Volver a reparto de roles">
             <span aria-hidden="true">←</span> Roles
         </a>
         <div class="round-badge">
-            <span class="round-label">RONDA {{ gameplay.current_round }} DE {{ gameplay.total_rounds }}</span>
+            <span class="round-label">RONDA <span id="round-current">1</span> DE <span id="round-total">1</span></span>
         </div>
     </header>
 
@@ -36,9 +36,9 @@
 
             <div class="speaker-info">
                 <span class="speaker-caption">EN TURNO DE HABLAR:</span>
-                <h1 id="gameplay-title" class="speaker-name" aria-live="polite">Tripulante 1</h1>
+                <h1 id="gameplay-title" class="speaker-name" aria-live="polite">Jugador 1</h1>
                 <span class="speaker-counter">
-                    Jugador <strong id="speaker-index">1</strong> de <strong>{{ gameplay.players|length }}</strong>
+                    Jugador <strong id="speaker-index">1</strong> de <strong id="speaker-total">1</strong>
                 </span>
             </div>
         </div>
@@ -67,11 +67,10 @@
         </div>
     </article>
 
-    <!-- Datos estructurados inyectados de forma segura -->
-    <script id="gameplay-data" type="application/json">{{ gameplay|tojson }}</script>
 </section>
 {% endblock %}
 
 {% block extra_js %}
+    <script src="{{ url_for('static', filename='js/modo-local.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/juego.js') }}" defer></script>
 {% endblock %}

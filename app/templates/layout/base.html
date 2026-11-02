@@ -4,26 +4,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0B0E17">
-    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/favicon.svg') }}">
-    <title>{% block title %}El Impostor - Videojuego{% endblock %}</title>
+    <meta name="theme-color" content="#131417">
+    <link rel="manifest" href="{{ url_for('pwa.manifest') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/sospecha-icon.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/icons/icon-192.png') }}">
+    <title>{% block title %}Sospecha - Juego de deducción{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Archivo:wght@700;800;900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     {% block extra_css %}{% endblock %}
 </head>
 
-<body>
-    <div class="stars-backdrop" aria-hidden="true"></div>
-    <div class="glow-orb" aria-hidden="true"></div>
+<body data-words-url="{{ url_for('game.palabras') }}" data-service-worker-url="{{ url_for('pwa.service_worker') }}">
+    <div class="spotlight-backdrop" aria-hidden="true"></div>
+    <div class="spotlight-cone" aria-hidden="true"></div>
 
     <main class="app-viewport">
         {% block content %}{% endblock %}
     </main>
 
+    <script src="{{ url_for('static', filename='js/pwa.js') }}" defer></script>
     {% block extra_js %}{% endblock %}
 </body>
 

@@ -1,6 +1,6 @@
 .voting-badge {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(244, 239, 230, 0.06);
+    border: 1px solid rgba(244, 239, 230, 0.12);
     border-radius: 20px;
     padding: 6px 14px;
 }
@@ -8,7 +8,7 @@
 .badge-text {
     font-size: 0.75rem;
     font-weight: 800;
-    color: var(--accent);
+    color: var(--highlight);
     text-transform: uppercase;
     letter-spacing: 1.5px;
 }
@@ -16,7 +16,7 @@
 .voting-card {
     padding: 28px 20px;
     text-align: center;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 240, 255, 0.12);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
     align-items: center;
     gap: 18px;
 }
@@ -30,7 +30,7 @@
     font-size: 1.35rem;
     letter-spacing: 1px;
     font-weight: 900;
-    color: #FFFFFF;
+    color: var(--text-primary);
 }
 
 .voting-instruction {
@@ -61,13 +61,13 @@
 }
 
 .voters-list::-webkit-scrollbar-thumb {
-    background: rgba(0, 240, 255, 0.3);
+    background: rgba(var(--highlight-rgb), 0.3);
     border-radius: 4px;
 }
 
 .voter-slot {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(244, 239, 230, 0.03);
+    border: 1px solid rgba(244, 239, 230, 0.08);
     border-radius: 18px;
     padding: 12px 14px;
     display: flex;
@@ -77,8 +77,8 @@
 }
 
 .voter-slot:focus-within {
-    border-color: var(--accent);
-    background: rgba(0, 240, 255, 0.04);
+    border-color: var(--highlight);
+    background: rgba(var(--highlight-rgb), 0.04);
 }
 
 .voter-identity {
@@ -106,7 +106,7 @@
 .voter-name {
     font-size: 0.95rem;
     font-weight: 700;
-    color: #FFFFFF;
+    color: var(--text-primary);
 }
 
 .voter-choice {
@@ -128,9 +128,9 @@
     width: 100%;
     padding: 10px 14px;
     border-radius: 14px;
-    background: #0D1322;
-    border: 1.5px solid rgba(255, 255, 255, 0.15);
-    color: #FFFFFF;
+    background: var(--bg-main);
+    border: 1.5px solid rgba(244, 239, 230, 0.15);
+    color: var(--text-primary);
     font-family: var(--font-body);
     font-size: 0.92rem;
     font-weight: 600;
@@ -140,8 +140,8 @@
 }
 
 .voting-select:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 12px var(--accent-glow);
+    border-color: var(--highlight);
+    box-shadow: 0 0 12px var(--highlight-glow);
 }
 
 .action-container {

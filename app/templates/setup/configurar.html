@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
 
-{% block title %}Configurar Partida | El Impostor{% endblock %}
+{% block title %}Configurar Partida | Sospecha{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/configurar.css') }}">
@@ -32,15 +32,19 @@
             <span aria-hidden="true">←</span> Volver
         </a>
         <h1 id="config-title" class="config-title">CONFIGURAR PARTIDA</h1>
-        <p class="config-subtitle">Ajusta las reglas de la misión antes del despegue</p>
+        <p class="config-subtitle">Ajusta las reglas antes de empezar</p>
     </header>
 
-    <form id="config-form" class="config-form" method="POST" action="{{ url_for('room.nueva' if online else 'game.configurar') }}">
+    {% if online %}
+    <form id="config-form" class="config-form" method="POST" action="{{ url_for('room.nueva') }}">
+    {% else %}
+    <form id="config-form" class="config-form" data-mode="local" data-next-url="{{ url_for('game.jugadores') }}">
+    {% endif %}
         <!-- Configuración de Jugadores -->
         <div class="form-group">
             <div class="group-info">
                 <label for="players-input" class="group-label">Jugadores</label>
-                <span class="group-hint">Entre 3 y 12 tripulantes</span>
+                <span class="group-hint">Entre 3 y 12 jugadores</span>
             </div>
             <div class="stepper-control">
                 <button type="button" class="btn-stepper" id="btn-sub-players" aria-label="Disminuir jugadores">-</button>
@@ -108,7 +112,7 @@
         <div class="form-group">
             <div class="group-info">
                 <label id="category-dropdown-label" class="group-label">Categoría de Palabras</label>
-                <span class="group-hint">Vocabulario secreto para la tripulación</span>
+                <span class="group-hint">Vocabulario secreto de la partida</span>
             </div>
 
             <div class="custom-dropdown" id="category-dropdown">
@@ -147,9 +151,11 @@
                 <label for="custom-words-input" class="group-label">Tus Palabras Propias</label>
                 <span class="group-hint">Escribe al menos 3 palabras separadas por comas</span>
             </div>
-            <textarea id="custom-words-input" name="custom_words" class="custom-textarea" rows="3" placeholder="Ej: Pirámide, Submarino, Astronauta, Volcán" aria-describedby="config-error">{{ config.custom_words }}</textarea>
+            <textarea id="custom-words-input" name="custom_words" class="custom-textarea" rows="3" placeholder="Ej: Pirámide, Submarino, Faro, Volcán" aria-describedby="config-error">{{ config.custom_words }}</textarea>
             <p id="config-error" class="form-error{% if not error %} view-hidden{% endif %}" role="alert">{{ error or "" }}</p>
         </div>
+
+        <p id="config-form-error" class="form-error view-hidden" role="alert"></p>
 
         <div class="action-container">
             <button type="submit" class="btn-primary">
@@ -162,5 +168,6 @@
 {% endblock %}
 
 {% block extra_js %}
+    <script src="{{ url_for('static', filename='js/modo-local.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/configurar.js') }}" defer></script>
 {% endblock %}

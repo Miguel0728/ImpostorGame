@@ -1,5 +1,9 @@
+import json
 import random
 from collections import Counter
+from pathlib import Path
+
+WORDS_FILE = Path(__file__).resolve().parent.parent / "database" / "words.json"
 
 MIN_PLAYERS, MAX_PLAYERS = 3, 12
 MAX_NAME_LENGTH = 16
@@ -18,20 +22,12 @@ DEFAULT_SETTINGS = {
     "custom_words": ""
 }
 
-CATEGORIES = [
-    {"id": "lugares", "name": "Lugares del Mundo"},
-    {"id": "comida", "name": "Comidas y Bebidas"},
-    {"id": "objetos", "name": "Objetos Cotidianos"},
-    {"id": "profesiones", "name": "Profesiones"},
-    {"id": "personalizada", "name": "Palabras Propias"}
-]
+# Única fuente de categorías y palabras: el mismo archivo lo usan el modo local (JS) y el modo online (Flask).
+with WORDS_FILE.open(encoding="utf-8") as words_file:
+    _CATEGORY_DATA = json.load(words_file)["categories"]
 
-WORDS = {
-    "lugares": ["Aeropuerto", "Playa", "Hospital", "Submarino", "Estación Espacial", "Museo", "Castillo"],
-    "comida": ["Pizza", "Hamburguesa", "Sushi", "Tacos", "Chocolate", "Helado", "Paella"],
-    "objetos": ["Guitarra", "Telescopio", "Reloj", "Brújula", "Espejo", "Cámara", "Linterna"],
-    "profesiones": ["Astronauta", "Detective", "Piloto", "Cocinero", "Cirujano", "Bombero", "Científico"]
-}
+CATEGORIES = [{"id": category["id"], "name": category["name"]} for category in _CATEGORY_DATA]
+WORDS = {category["id"]: category["words"] for category in _CATEGORY_DATA if category.get("words")}
 
 
 def get_available_categories():
@@ -45,7 +41,7 @@ def get_game_configuration(session_obj):
 
 
 def color_index_for(index):
-    """Asigna un color de la paleta de tripulantes a partir de la posición del jugador."""
+    """Asigna un color de la paleta de jugadores a partir de la posición del jugador."""
     return (index % COLOR_COUNT) + 1
 
 
@@ -107,26 +103,6 @@ def clear_round_state(session_obj):
         session_obj.pop(key, None)
 
 
-def save_configuration(session_obj, config):
-    """Guarda la configuración validada y reinicia la partida desde la ronda 1."""
-    clear_round_state(session_obj)
-    session_obj["config"] = config
-    session_obj["current_round"] = 1
-
-
-def generate_player_slots(player_count, names=None):
-    """Genera los espacios para nombrar a los jugadores, conservando nombres ya escritos."""
-    names = names or []
-    return [
-        {
-            "id": i + 1,
-            "placeholder": names[i] if i < len(names) else f"Tripulante {i + 1}",
-            "color_index": color_index_for(i)
-        }
-        for i in range(player_count)
-    ]
-
-
 def _names_error(names, expected_count):
     """Retorna el primer problema de los nombres (vacíos, largos o repetidos) o None."""
     if len(names) != expected_count or not all(names):
@@ -144,15 +120,10 @@ def validate_player_names(names_list, expected_count):
     return cleaned, _names_error(cleaned, expected_count)
 
 
-def save_player_names(session_obj, names_list):
-    """Guarda la lista final de nombres de jugadores en la sesión."""
-    session_obj["players"] = list(names_list)
-
-
 def get_player_names(session_obj):
     """Obtiene los nombres guardados o genera nombres por defecto."""
     count = get_game_configuration(session_obj)["players"]
-    return session_obj.get("players", [f"Tripulante {i + 1}" for i in range(count)])
+    return session_obj.get("players", [f"Jugador {i + 1}" for i in range(count)])
 
 
 def pick_secret_word(category_id, custom_words_str):
@@ -162,13 +133,13 @@ def pick_secret_word(category_id, custom_words_str):
 
 
 def build_player_role_payload(index, name, is_impostor, secret_word):
-    """Construye el objeto de rol para un tripulante o impostor."""
+    """Construye el objeto de rol para un jugador o impostor."""
     return {
         "id": index + 1,
         "name": name,
         "color_index": color_index_for(index),
         "is_impostor": is_impostor,
-        "role_title": "IMPOSTOR" if is_impostor else "TRIPULANTE",
+        "role_title": "IMPOSTOR" if is_impostor else "JUGADOR",
         "word": "???" if is_impostor else secret_word,
         "hint": "Finge conocer la palabra secreta" if is_impostor else "Descubre quién finge conocer la palabra"
     }
@@ -210,7 +181,7 @@ def find_most_voted_role(roles, vote_counts):
 
 
 def split_free_impostors(impostors, most_voted):
-    """Separa a los impostores que siguen libres: solo pierde el que fue expulsado."""
+    """Separa a los impostores que siguen libres: solo pierde el que fue descubierto."""
     return [imp for imp in impostors if imp["id"] != most_voted["id"]]
 
 
@@ -227,7 +198,7 @@ def get_round_info(session_obj):
 
 
 def summarize_impostors(roles, most_voted):
-    """Indica si se expulsó a un impostor y cuáles siguen libres."""
+    """Indica si se descubrió a un impostor y cuáles siguen libres."""
     impostors = [r for r in roles if r["is_impostor"]]
     caught = bool(most_voted and most_voted["is_impostor"])
     return {
@@ -238,7 +209,7 @@ def summarize_impostors(roles, most_voted):
 
 
 def resolve_voting_outcome(session_obj, raw_votes):
-    """Determina si la tripulación descubrió al impostor o si este escapó."""
+    """Determina si los jugadores descubrieron al impostor o si este escapó."""
     roles = get_stored_roles(session_obj)
     most_voted, top_votes = find_most_voted_role(roles, tally_votes(raw_votes))
     return {
@@ -256,13 +227,3 @@ def advance_to_next_round(session_obj):
     clear_round_state(session_obj)
     session_obj["current_round"] = current + 1
     return initialize_new_game(session_obj)
-
-
-def get_gameplay_data(session_obj):
-    """Estructura la información necesaria para la fase activa de debate."""
-    names = get_player_names(session_obj)
-    return {
-        "players": [{"id": i + 1, "name": n, "color_index": color_index_for(i)} for i, n in enumerate(names)],
-        "time_seconds": get_game_configuration(session_obj)["time_seconds"],
-        **get_round_info(session_obj)
-    }

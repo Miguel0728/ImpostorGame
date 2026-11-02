@@ -13,14 +13,14 @@
     animation: zoomVerdict 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.card-crew-win {
-    border: 2px solid var(--accent);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 35px var(--accent-glow);
+.card-players-win {
+    border: 2px solid var(--ok);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 35px var(--ok-glow);
 }
 
 .card-impostor-win {
-    border: 2px solid var(--primary);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 35px var(--primary-glow);
+    border: 2px solid var(--signal);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 35px var(--signal-glow);
 }
 
 .verdict-header {
@@ -31,14 +31,14 @@
 }
 
 .round-pill-badge {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(244, 239, 230, 0.08);
+    border: 1px solid rgba(244, 239, 230, 0.15);
     border-radius: 20px;
     padding: 6px 16px;
     font-size: 0.76rem;
     font-weight: 800;
     letter-spacing: 1.5px;
-    color: var(--accent);
+    color: var(--highlight);
     text-transform: uppercase;
 }
 
@@ -53,12 +53,12 @@
     letter-spacing: 2.5px;
 }
 
-.card-crew-win .verdict-kicker {
-    color: var(--accent);
+.card-players-win .verdict-kicker {
+    color: var(--ok);
 }
 
 .card-impostor-win .verdict-kicker {
-    color: var(--primary);
+    color: var(--signal);
 }
 
 .verdict-title {
@@ -66,7 +66,7 @@
     font-size: 1.55rem;
     line-height: 1.25;
     font-weight: 900;
-    color: #FFFFFF;
+    color: var(--text-primary);
 }
 
 .verdict-details {
@@ -78,7 +78,7 @@
 
 .detail-box {
     background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(244, 239, 230, 0.08);
     border-radius: 16px;
     padding: 14px 16px;
     display: flex;
@@ -98,15 +98,14 @@
     font-family: var(--font-heading);
     font-size: 1.15rem;
     font-weight: 800;
-    color: #FFFFFF;
+    color: var(--text-primary);
 }
 
 .detail-impostor {
     font-family: var(--font-heading);
     font-size: 1.2rem;
     font-weight: 900;
-    color: var(--primary);
-    text-shadow: 0 0 12px var(--primary-glow);
+    color: var(--signal);
 }
 
 .detail-word {
@@ -114,8 +113,7 @@
     font-size: 1.35rem;
     font-weight: 900;
     letter-spacing: 2px;
-    color: var(--accent);
-    text-shadow: 0 0 15px var(--accent-glow);
+    color: var(--highlight);
 }
 
 .result-actions {
@@ -126,8 +124,8 @@
 }
 
 .result-actions .btn-secondary {
-    border-color: rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(244, 239, 230, 0.15);
+    background: rgba(244, 239, 230, 0.05);
     color: var(--text-secondary);
     font-weight: 700;
     transition: background 0.2s ease, color 0.2s ease;
@@ -142,9 +140,9 @@
 }
 
 .result-actions .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.15);
-    color: #FFFFFF;
+    background: rgba(244, 239, 230, 0.12);
+    border-color: rgba(244, 239, 230, 0.15);
+    color: var(--text-primary);
     transform: none;
 }
 

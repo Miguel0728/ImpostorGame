@@ -1,0 +1,33 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Sin conexión | Sospecha{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="welcome-card" aria-labelledby="offline-title">
+    <header class="welcome-header">
+        <img class="brand-mark" src="{{ url_for('static', filename='img/sospecha-icon.png') }}" width="112" height="112" alt="">
+        <p class="tagline">Sin conexión</p>
+        <h1 id="offline-title" class="game-title">LAS SALAS NECESITAN <span class="accent-title">INTERNET</span></h1>
+    </header>
+
+    <div class="welcome-body">
+        <p class="game-description">
+            No pudimos conectar con el servidor. Las salas online solo funcionan con conexión, pero el modo Pass &amp; Play se juega igual sin internet.
+        </p>
+
+        <div class="action-container">
+            <a class="btn-primary" href="{{ url_for('game.configurar') }}">
+                <span class="btn-text">JUGAR PASS &amp; PLAY</span>
+                <span class="btn-icon" aria-hidden="true">➔</span>
+            </a>
+            <a class="btn-secondary" href="{{ url_for('home.index') }}">
+                <span class="btn-text">IR AL INICIO</span>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

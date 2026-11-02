@@ -1,0 +1,68 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Política de privacidad | Sospecha{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/privacidad.css') }}">
+{% endblock %}
+
+{% block content %}
+<article class="legal-card" aria-labelledby="legal-title">
+    <header class="legal-header">
+        <a href="{{ url_for('home.index') }}" class="btn-back" aria-label="Volver al inicio">
+            <span aria-hidden="true">←</span> Inicio
+        </a>
+        <h1 id="legal-title" class="legal-title">POLÍTICA DE PRIVACIDAD</h1>
+        <p class="legal-updated">Última actualización: 2 de noviembre de 2026</p>
+    </header>
+
+    <section class="legal-section">
+        <h2>En pocas palabras</h2>
+        <p>Sospecha es un juego de deducción para jugar en grupo. No tiene cuentas de usuario, no muestra anuncios, no tiene compras y no vendemos ni compartimos tus datos.</p>
+    </section>
+
+    <section class="legal-section">
+        <h2>Modo Pass &amp; Play (un solo teléfono)</h2>
+        <p>Los nombres que escribes, las reglas elegidas y el avance de la partida se guardan únicamente en tu dispositivo, dentro del almacenamiento del navegador o de la app. No se envían a nuestro servidor. Puedes borrarlos en cualquier momento al terminar la partida o desde los ajustes de tu navegador.</p>
+    </section>
+
+    <section class="legal-section">
+        <h2>Salas online</h2>
+        <p>Para jugar en salas online, el servidor guarda temporalmente en su memoria el nombre o apodo que escribes, tu rol, tu voto y el estado de la partida. Todo se elimina cuando la sala pasa 6 horas sin actividad o cuando el servidor se reinicia. No guardamos esa información en ninguna base de datos.</p>
+    </section>
+
+    <section class="legal-section">
+        <h2>Cookies</h2>
+        <p>Usamos una única cookie de sesión, necesaria para que el servidor reconozca tu navegador dentro de una sala. Contiene un identificador anónimo, no sirve para seguirte y no se usa con fines publicitarios.</p>
+    </section>
+
+    <section class="legal-section">
+        <h2>Dirección IP y registros del servidor</h2>
+        <p>Como cualquier sitio web, el servidor recibe tu dirección IP al atender tus peticiones. La usamos solo para limitar la cantidad de salas que se pueden crear por hora y evitar abusos; ese conteo vive en memoria y se descarta solo. El servicio de alojamiento puede conservar registros técnicos normales de acceso.</p>
+    </section>
+
+    <section class="legal-section">
+        <h2>Servicios de terceros</h2>
+        <p>Las fuentes de letra se cargan desde Google Fonts, por lo que Google puede recibir tu dirección IP al descargarlas. No usamos analítica, publicidad ni otros servicios externos.</p>
+    </section>
+
+    <section class="legal-section">
+        <h2>Niños y niñas</h2>
+        <p>No pedimos edad, correo, teléfono ni ningún dato personal. Los únicos datos que se escriben son los apodos que cada grupo elige para jugar.</p>
+    </section>
+
+    <section class="legal-section">
+        <h2>Cambios en esta política</h2>
+        <p>Si el juego incorpora anuncios, compras u otras funciones que cambien cómo se tratan los datos, actualizaremos esta página antes de publicarlas e indicaremos la fecha arriba.</p>
+    </section>
+
+    <section class="legal-section">
+        <h2>Contacto</h2>
+        {% if contact_email %}
+        <p>Si tienes preguntas sobre esta política o quieres pedir que se elimine algún dato, escríbenos a <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>.</p>
+        {% else %}
+        <p>El contacto de esta política aún no está configurado en el servidor.</p>
+        {% endif %}
+    </section>
+</article>
+{% endblock %}

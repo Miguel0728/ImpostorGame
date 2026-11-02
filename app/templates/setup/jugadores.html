@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
 
-{% block title %}Nombrar Tripulantes | El Impostor{% endblock %}
+{% block title %}Nombrar Jugadores | Sospecha{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/jugadores.css') }}">
@@ -29,35 +29,14 @@
         <a href="{{ url_for('game.configurar') }}" class="btn-back" aria-label="Volver a configuración">
             <span aria-hidden="true">←</span> Configuración
         </a>
-        <h1 id="players-title" class="players-title">TRIPULACIÓN</h1>
-        <p class="players-subtitle">Escribe el nombre o alias de los {{ config.players }} jugadores</p>
+        <h1 id="players-title" class="players-title">JUGADORES</h1>
+        <p class="players-subtitle">Escribe el nombre o alias de los <span id="players-count"></span> jugadores</p>
     </header>
 
-    <form id="players-form" class="players-form" method="POST" action="{{ url_for('game.jugadores') }}">
-        <p id="players-error" class="form-error{% if not error %} view-hidden{% endif %}" role="alert">{{ error or "" }}</p>
+    <form id="players-form" class="players-form" data-config-url="{{ url_for('game.configurar') }}" data-next-url="{{ url_for('game.roles') }}">
+        <p id="players-error" class="form-error view-hidden" role="alert"></p>
 
-        <div class="players-list" role="list">
-            {% for slot in slots %}
-            <div class="player-slot color-theme-{{ slot.color_index }}" role="listitem">
-                <div class="player-avatar" aria-hidden="true">
-                    <span class="player-number">{{ slot.id }}</span>
-                </div>
-                <div class="player-field">
-                    <label for="player-input-{{ slot.id }}" class="player-label">Jugador {{ slot.id }}</label>
-                    <input 
-                        type="text" 
-                        id="player-input-{{ slot.id }}" 
-                        name="player_name" 
-                        class="player-input" 
-                        value="{{ slot.placeholder }}" 
-                        placeholder="Nombre o apodo" 
-                        maxlength="16" 
-                        autocomplete="off" 
-                        required>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+        <div id="players-list" class="players-list" role="list"></div>
 
         <div class="action-container">
             <button type="submit" class="btn-primary">
@@ -70,5 +49,6 @@
 {% endblock %}
 
 {% block extra_js %}
+    <script src="{{ url_for('static', filename='js/modo-local.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/jugadores.js') }}" defer></script>
 {% endblock %}

@@ -3,20 +3,43 @@ const CARD_IDS = ["card-privacy", "card-secret", "card-finished"];
 const gameState = {
     currentIndex: 0,
     roles: [],
-    hasInteracted: false
+    hasInteracted: false,
+    saved: {}
 };
 
 document.addEventListener("DOMContentLoaded", initRolesPage);
 
-function initRolesPage() {
-    gameState.roles = JSON.parse(document.getElementById("roles-data").textContent);
+async function initRolesPage() {
+    const state = ModoLocal.loadState();
+    if (!ModoLocal.hasGameInProgress(state)) {
+        window.location.replace(document.querySelector("[data-config-url]").dataset.configUrl);
+        return;
+    }
+    if (!state.roles) {
+        const words = await ModoLocal.loadWords(document.body.dataset.wordsUrl);
+        ModoLocal.getStoredRoles(state, words);
+    }
+    state.phase = "roles";
+    ModoLocal.saveState(state);
+    gameState.saved = state;
+    gameState.roles = state.roles;
+    gameState.currentIndex = Math.min(state.reveal_index || 0, gameState.roles.length);
+    document.getElementById("progress-total").textContent = String(gameState.roles.length);
     document.getElementById("btn-reveal-role").addEventListener("click", handleRevealClick);
     document.getElementById("btn-hide-and-next").addEventListener("click", handleNextClick);
-    renderPrivacyStep();
+    renderCurrentStep();
 }
 
 function getCurrentPlayer() {
     return gameState.roles[gameState.currentIndex];
+}
+
+function renderCurrentStep() {
+    if (gameState.currentIndex < gameState.roles.length) {
+        renderPrivacyStep();
+    } else {
+        showFinishedStep();
+    }
 }
 
 function renderPrivacyStep() {
@@ -40,17 +63,19 @@ function renderSecretStep() {
     document.getElementById("secret-word").textContent = player.word;
     document.getElementById("secret-hint").textContent = player.hint;
     document.getElementById("role-badge-text").textContent = player.role_title;
-    document.getElementById("role-badge").className = `role-badge ${player.is_impostor ? "badge-impostor" : "badge-crew"}`;
+    document.getElementById("role-badge").className = `role-badge ${player.is_impostor ? "badge-impostor" : "badge-player"}`;
     document.getElementById("btn-hide-text").textContent = isLast ? "FINALIZAR ENTREGA DE ROLES" : "OCULTAR Y PASAR TELÉFONO";
     showCard("card-secret");
 }
 
 function handleNextClick() {
     gameState.currentIndex += 1;
-    if (gameState.currentIndex < gameState.roles.length) {
-        renderPrivacyStep();
-        return;
-    }
+    gameState.saved.reveal_index = gameState.currentIndex;
+    ModoLocal.saveState(gameState.saved);
+    renderCurrentStep();
+}
+
+function showFinishedStep() {
     document.getElementById("pass-progress-container").classList.add("view-hidden");
     showCard("card-finished");
 }

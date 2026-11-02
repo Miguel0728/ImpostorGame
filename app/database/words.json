@@ -1,0 +1,28 @@
+{
+    "categories": [
+        {
+            "id": "lugares",
+            "name": "Lugares del Mundo",
+            "words": ["Aeropuerto", "Playa", "Hospital", "Submarino", "Biblioteca", "Museo", "Castillo"]
+        },
+        {
+            "id": "comida",
+            "name": "Comidas y Bebidas",
+            "words": ["Pizza", "Hamburguesa", "Sushi", "Tacos", "Chocolate", "Helado", "Paella"]
+        },
+        {
+            "id": "objetos",
+            "name": "Objetos Cotidianos",
+            "words": ["Guitarra", "Telescopio", "Reloj", "Brújula", "Espejo", "Cámara", "Linterna"]
+        },
+        {
+            "id": "profesiones",
+            "name": "Profesiones",
+            "words": ["Arquitecto", "Detective", "Piloto", "Cocinero", "Cirujano", "Bombero", "Científico"]
+        },
+        {
+            "id": "personalizada",
+            "name": "Palabras Propias"
+        }
+    ]
+}

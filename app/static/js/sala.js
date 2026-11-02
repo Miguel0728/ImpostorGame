@@ -3,8 +3,8 @@ const MIN_PLAYERS = 3;
 const VIEWS = ["join", "lobby", "debate", "voting", "result"];
 
 const VERDICTS = {
-    free: { icon: "🏆", kicker: "SOLO PIERDE EL EXPULSADO", title: "¡UN IMPOSTOR FUE EXPULSADO, PERO QUEDAN LIBRES!" },
-    caught: { icon: "🏆", kicker: "VICTORIA DE LA TRIPULACIÓN", title: "¡EL IMPOSTOR FUE EXPULSADO!" },
+    free: { icon: "🏆", kicker: "SOLO PIERDE EL DESCUBIERTO", title: "¡UN IMPOSTOR FUE DESCUBIERTO, PERO QUEDAN LIBRES!" },
+    caught: { icon: "🏆", kicker: "VICTORIA DE LOS JUGADORES", title: "¡DESCUBRIERON AL IMPOSTOR!" },
     escaped: { icon: "😈", kicker: "VICTORIA DEL IMPOSTOR", title: "¡EL IMPOSTOR LOGRÓ ENGAÑAR A TODOS!" }
 };
 
@@ -62,7 +62,7 @@ function handleJoinSubmit(event) {
 }
 
 async function handleShareClick() {
-    const data = { title: "El Impostor", text: "Únete a mi sala de El Impostor", url: window.location.href };
+    const data = { title: "Sospecha", text: "Únete a mi sala de Sospecha", url: window.location.href };
     if (navigator.share) {
         await navigator.share(data).catch(() => null);
         return;
@@ -148,7 +148,7 @@ function renderDebate(state) {
     setText("role-badge-text", role.role_title);
     setText("secret-word", role.word);
     setText("secret-hint", role.hint);
-    document.getElementById("role-badge").className = `role-badge ${role.is_impostor ? "badge-impostor" : "badge-crew"}`;
+    document.getElementById("role-badge").className = `role-badge ${role.is_impostor ? "badge-impostor" : "badge-player"}`;
     fillRoster("debate-players", state.players);
 }
 
@@ -180,7 +180,7 @@ function renderResult(state) {
     const outcome = state.outcome;
     const verdict = VERDICTS[verdictKey(outcome)];
     const hasFree = outcome.free_impostors.length > 0;
-    document.getElementById("view-result").classList.toggle("card-crew-win", outcome.impostor_caught);
+    document.getElementById("view-result").classList.toggle("card-players-win", outcome.impostor_caught);
     document.getElementById("view-result").classList.toggle("card-impostor-win", !outcome.impostor_caught);
     document.getElementById("result-free-box").classList.toggle("view-hidden", !hasFree);
     setText("result-round", `RONDA ${outcome.current_round} DE ${outcome.total_rounds}`);
@@ -188,7 +188,7 @@ function renderResult(state) {
     setText("result-kicker", verdict.kicker);
     setText("result-title", verdict.title);
     setText("result-voted", outcome.most_voted ? `${outcome.most_voted.name} (${outcome.top_votes} votos)` : "Empate / Sin mayoría");
-    setText("result-impostors-label", hasFree ? "IMPOSTOR EXPULSADO:" : "IDENTIDAD DEL IMPOSTOR REAL:");
+    setText("result-impostors-label", hasFree ? "IMPOSTOR DESCUBIERTO:" : "IDENTIDAD DEL IMPOSTOR REAL:");
     setText("result-impostors", hasFree ? outcome.most_voted.name : joinNames(outcome.impostors));
     setText("result-free", joinNames(outcome.free_impostors));
     setText("result-word", outcome.secret_word);
